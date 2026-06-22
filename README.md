@@ -1,36 +1,183 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Primis Global Assement FE
 
-## Getting Started
+Frontend application for Primis-Global-Assement built with Next.js App Router, React, TypeScript, and Material UI.
 
-First, run the development server:
+## Tech Stack
+
+- Next.js `16.2.9`
+- React `19.2.4`
+- TypeScript
+- Material UI `9.1.1`
+- Emotion for MUI styling
+- Tailwind CSS v4 global setup
+- Docker production image with Next standalone output
+
+## Requirements
+
+- Node.js `20.9.0` or newer
+- npm
+- Docker, optional for containerized production runs
+
+## Installation
+
+```bash
+npm install
+```
+
+## Local Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The root route redirects to `/login`.
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Starts the local Next.js dev server. |
+| `npm run build` | Creates a production build. |
+| `npm run start` | Starts the production server after `npm run build`. |
+| `npm run lint` | Runs ESLint. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | File | Description |
+| --- | --- | --- |
+| `/` | `app/page.tsx` | Redirects to `/login`. |
+| `/login` | `app/login/page.tsx` | Split-screen login page with username, password, and submit button. |
+| `/users` | `app/users/page.tsx` | Users management page with table, add/edit dialog, delete actions, and pagination. |
 
-## Deploy on Vercel
+## Users Page Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Renders a Material UI table of users.
+- Each row has Edit, Delete, and Permanent Delete actions.
+- Delete marks a user as inactive.
+- Permanent Delete removes the row from the table.
+- Add User opens a dialog with:
+  - `first_name`
+  - `last_name`
+  - `email`
+  - `password`
+- Edit User opens the dialog without the password field.
+- Dialog has Submit and Cancel buttons.
+- Pagination below the table shows total records and current page count.
+- Rows-per-page options are `5`, `10`, and `25`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Current user data is in client state only, so changes reset on page refresh.
+
+## Component Structure
+
+```text
+app/
+  components/
+    UserFormDialog.tsx      Add/edit user dialog
+    UsersPageContent.tsx    Users page state and actions
+    UsersPagination.tsx     Table pagination footer
+    UsersTable.tsx          Users table and row action buttons
+    types.ts                Shared users types
+  login/
+    page.tsx                Login route
+  users/
+    page.tsx                Users route
+  layout.tsx                Root layout
+  page.tsx                  Root redirect
+  providers.tsx             MUI theme and Next App Router cache provider
+```
+
+## Material UI Setup
+
+MUI is configured in `app/providers.tsx` using:
+
+- `AppRouterCacheProvider` from `@mui/material-nextjs/v16-appRouter`
+- `ThemeProvider`
+- `CssBaseline`
+
+The app uses `output: "standalone"` in `next.config.ts` so Docker can run a smaller production image.
+
+## Docker
+
+Build the production image:
+
+```bash
+docker build -t primis-global-assement-fe .
+```
+
+Run the container in the foreground:
+
+```bash
+docker run --rm -p 3000:3000 primis-global-assement-fe
+```
+
+Run the container in the background:
+
+```bash
+docker run -d --name primis-global-assement-fe -p 3000:3000 primis-global-assement-fe
+```
+
+View container logs:
+
+```bash
+docker logs -f primis-global-assement-fe
+```
+
+Stop the background container:
+
+```bash
+docker stop primis-global-assement-fe
+```
+
+Remove the stopped container if needed:
+
+```bash
+docker rm primis-global-assement-fe
+```
+
+Open the app:
+
+```text
+http://localhost:3000
+```
+
+## Docker Notes
+
+- The Dockerfile uses a multi-stage build.
+- Dependencies are installed with `npm ci`.
+- The production runtime uses `node:22-alpine`.
+- The final container starts with `node server.js`.
+- Port `3000` is exposed.
+- `.dockerignore` excludes local build output, dependencies, git files, and local environment files.
+
+## Production Without Docker
+
+```bash
+npm run build
+npm run start
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+## Quality Checks
+
+Run lint:
+
+```bash
+npm run lint
+```
+
+Run production build:
+
+```bash
+npm run build
+```
