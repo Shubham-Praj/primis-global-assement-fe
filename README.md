@@ -2,6 +2,8 @@
 
 Frontend application for Primis-Global-Assement built with Next.js App Router, React, TypeScript, and Material UI.
 
+![alt text](image.png)
+
 ## Tech Stack
 
 - Next.js `16.2.9`
